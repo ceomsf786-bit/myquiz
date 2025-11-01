@@ -1,38 +1,62 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Quiz Tracker</title>
-  </head>
-  <body>
-    <h1>My Quiz</h1>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Quiz Tracker</title>
+</head>
+<body>
+  <h1>My Quiz Tracker</h1>
 
-    <!-- Firebase scripts from CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <form id="quizForm">
+    <label>Name: <input type="text" id="username" required></label><br>
+    <label>Score: <input type="number" id="score" required></label><br>
+    <button type="submit">Submit</button>
+  </form>
 
-    <script>
-      // ✅ Your Firebase config
-      const firebaseConfig = {
-        apiKey: "AIzaSyCa2ntjqtWAfpIkNJht_Y-M2p_fijJKHLo",
-        authDomain: "my-quiz-tracker.firebaseapp.com",
-        projectId: "my-quiz-tracker",
-        storageBucket: "my-quiz-tracker.firebasestorage.app",
-        messagingSenderId: "962276187889",
-        appId: "1:962276187889:web:8cd8be97d69e2240b39350"
-      };
+  <p id="status"></p>
 
-      // ✅ Initialize Firebase and Firestore
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
+  <!-- ✅ Firebase (compat version for normal HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-      // Example: write a test doc
-      db.collection("quizResults").add({
-        username: "TestUser",
-        score: 5
-      })
-      .then(() => console.log("Saved OK"))
-      .catch(err => console.error(err));
-    </script>
-  </body>
+  <script>
+    // ✅ Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCa2ntjqtWAfpIkNJht_Y-M2p_fijJKHLo",
+      authDomain: "my-quiz-tracker.firebaseapp.com",
+      projectId: "my-quiz-tracker",
+      storageBucket: "my-quiz-tracker.firebasestorage.app",
+      messagingSenderId: "962276187889",
+      appId: "1:962276187889:web:8cd8be97d69e2240b39350"
+    };
+
+    // ✅ Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ✅ Save quiz results to Firestore
+    const form = document.getElementById("quizForm");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("username").value.trim();
+      const score = parseInt(document.getElementById("score").value);
+
+      try {
+        await db.collection("quizResults").add({
+          username: name,
+          score: score,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        status.innerText = "✅ Score saved successfully!";
+        form.reset();
+      } catch (error) {
+        console.error("Error writing document: ", error);
+        status.innerText = "❌ Error saving score — check console.";
+      }
+    });
+  </script>
+</body>
 </html>
