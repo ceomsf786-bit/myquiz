@@ -1,48 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Mini Quiz</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: sans-serif; text-align: center; margin: 2em; }
-    input, button { padding: 0.5em; margin: 0.5em; }
-    table { margin: 2em auto; border-collapse: collapse; width: 60%; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background-color: #f2f2f2; }
-  </style>
-</head>
-<body>
-  <h1>🔥 Quick Quiz</h1>
-  <p><b>Question:</b> What is 3 + 4 ?</p>
-  <input type="text" id="answer" placeholder="Your answer">
-  <input type="text" id="username" placeholder="Your name">
-  <button onclick="submitQuiz()">Submit</button>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quiz Tracker</title>
+  </head>
+  <body>
+    <h1>My Quiz</h1>
 
-  <h2>🏆 Leaderboard</h2>
-  <table>
-    <thead><tr><th>Name</th><th>Score</th></tr></thead>
-    <tbody id="leaderboard"></tbody>
-  </table>
+    <!-- Firebase scripts from CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"></script>
+    <script>
+      // ✅ Your Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCa2ntjqtWAfpIkNJht_Y-M2p_fijJKHLo",
+        authDomain: "my-quiz-tracker.firebaseapp.com",
+        projectId: "my-quiz-tracker",
+        storageBucket: "my-quiz-tracker.firebasestorage.app",
+        messagingSenderId: "962276187889",
+        appId: "1:962276187889:web:8cd8be97d69e2240b39350"
+      };
 
-  <script>
-    // 🧠 Replace with your own Firebase config:
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-    };
+      // ✅ Initialize Firebase and Firestore
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
-
-  <script src="script.js"></script>
-</body>
+      // Example: write a test doc
+      db.collection("quizResults").add({
+        username: "TestUser",
+        score: 5
+      })
+      .then(() => console.log("Saved OK"))
+      .catch(err => console.error(err));
+    </script>
+  </body>
 </html>
-
