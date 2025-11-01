@@ -1,27 +1,48 @@
+// ✅ Firebase config from your project
+const firebaseConfig = {
+  apiKey: "AIzaSyCa2ntjqtWAfpIkNJht_Y-M2p_fijJKHLo",
+  authDomain: "my-quiz-tracker.firebaseapp.com",
+  projectId: "my-quiz-tracker",
+  storageBucket: "my-quiz-tracker.firebasestorage.app",
+  messagingSenderId: "962276187889",
+  appId: "1:962276187889:web:8cd8be97d69e2240b39350"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const status = document.getElementById("status");
+const leaderboard = document.getElementById("leaderboard");
+
+// Submit quiz
 async function submitQuiz() {
   const username = document.getElementById("username").value.trim();
   const answer = document.getElementById("answer").value.trim();
 
-  if (!username) return alert("Enter your name first!");
+  if (!username) { alert("Enter your name!"); return; }
 
   let score = 0;
   if (answer === "7") score = 1;
 
-  await db.collection("quizResults").add({
-    username,
-    score,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  alert("✅ Quiz submitted!");
-  document.getElementById("answer").value = "";
-  loadLeaderboard();
+  try {
+    await db.collection("quizResults").add({
+      username,
+      score,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    status.innerText = "✅ Score saved!";
+    document.getElementById("answer").value = "";
+    loadLeaderboard();
+  } catch (error) {
+    console.error(error);
+    status.innerText = "❌ Error saving score — check console.";
+  }
 }
 
+// Load leaderboard (top 10)
 async function loadLeaderboard() {
-  const tbody = document.getElementById("leaderboard");
-  tbody.innerHTML = "";
-
+  leaderboard.innerHTML = "";
   const snapshot = await db.collection("quizResults")
     .orderBy("score", "desc")
     .orderBy("timestamp", "asc")
@@ -31,10 +52,9 @@ async function loadLeaderboard() {
   snapshot.forEach(doc => {
     const data = doc.data();
     const row = `<tr><td>${data.username}</td><td>${data.score}</td></tr>`;
-    tbody.innerHTML += row;
+    leaderboard.innerHTML += row;
   });
 }
 
 // Load leaderboard on page load
 loadLeaderboard();
-
